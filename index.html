@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
+<head><script>
+(function(){
+  var c='00000000@';
+  if(localStorage.getItem('bi_auth')!==c){
+    document.addEventListener('DOMContentLoaded',function(){
+      document.body.style.display='none';
+    });
+    var s=document.createElement('style');
+    s.textContent='body{display:none!important}';
+    document.head.appendChild(s);
+    window.addEventListener('load',function(){
+      var o=document.createElement('div');
+      o.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#F4F6FB;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:sans-serif;';
+      o.innerHTML='<div style="background:#fff;border-radius:16px;padding:40px 48px;box-shadow:0 8px 32px rgba(67,97,238,.15);text-align:center;max-width:360px;width:90%;"><div style="font-size:1.5rem;font-weight:900;color:#1A2340;margin-bottom:6px;">DF Channel Group BI</div><div style="font-size:.85rem;color:#6B7A99;margin-bottom:24px;">Internal use only. Enter password.</div><input id="pi" type="password" placeholder="Password" style="width:100%;padding:11px 16px;border:1.5px solid #E4E9F2;border-radius:8px;font-size:.95rem;outline:none;box-sizing:border-box;margin-bottom:10px;"><div id="pe" style="color:#EF4444;font-size:.8rem;height:18px;margin-bottom:8px;"></div><button onclick="ck()" style="width:100%;padding:11px;background:#4361EE;color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;">Enter Dashboard</button></div>';
+      document.body.appendChild(o);
+      document.body.style.display='';
+      document.getElementById('pi').focus();
+      document.getElementById('pi').addEventListener('keydown',function(e){if(e.key==='Enter')ck();});
+    });
+    window.ck=function(){
+      var v=document.getElementById('pi').value;
+      if(v===c){localStorage.setItem('bi_auth',c);location.reload();}
+      else{document.getElementById('pe').textContent='Wrong password.';document.getElementById('pi').value='';document.getElementById('pi').focus();}
+    };
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>渠道二组 BI 看板 · 4-7组 · 2026年4月</title>
@@ -157,38 +183,6 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:.72rem;border
 #page-apr .summary-table td:nth-child(9) { background:#FFFBEB; border-left:2px solid #FCD34D; }
 </style>
 
-<script>
-(function(){
-  var correct = '00000000@';
-  var stored = localStorage.getItem('bi_auth');
-  if(stored !== correct){
-    document.body.innerHTML = '';
-    var d = document.createElement('div');
-    d.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#F4F6FB;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:PingFang SC,Microsoft YaHei,sans-serif;';
-    d.innerHTML = '<div style="background:#fff;border-radius:16px;padding:40px 48px;box-shadow:0 8px 32px rgba(67,97,238,.15);text-align:center;max-width:360px;width:90%;">'
-      + '<div style="font-size:2rem;margin-bottom:12px;">\u{1F4CA}</div>'
-      + '<div style="font-size:1.2rem;font-weight:900;color:#1A2340;margin-bottom:6px;">DF Channel Group BI</div>'
-      + '<div style="font-size:.85rem;color:#6B7A99;margin-bottom:24px;">Internal use only. Please enter password.</div>'
-      + '<input id="pwdIn" type="password" placeholder="Password" style="width:100%;padding:11px 16px;border:1.5px solid #E4E9F2;border-radius:8px;font-size:.95rem;outline:none;box-sizing:border-box;margin-bottom:10px;" onkeydown="if(event.key===\'Enter\')chk()">'
-      + '<div id="pwdErr" style="color:#EF4444;font-size:.8rem;height:18px;margin-bottom:8px;"></div>'
-      + '<button onclick="chk()" style="width:100%;padding:11px;background:#4361EE;color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;">Enter Dashboard</button>'
-      + '</div>';
-    document.body.appendChild(d);
-    setTimeout(function(){document.getElementById('pwdIn').focus();},100);
-  }
-  window.chk = function(){
-    var v = document.getElementById('pwdIn').value;
-    if(v === correct){
-      localStorage.setItem('bi_auth', correct);
-      location.reload();
-    } else {
-      document.getElementById('pwdErr').textContent = 'Wrong password, try again.';
-      document.getElementById('pwdIn').value = '';
-      document.getElementById('pwdIn').focus();
-    }
-  };
-})();
-</script>
 </head>
 <body>
 
