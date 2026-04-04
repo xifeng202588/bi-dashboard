@@ -156,6 +156,38 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:.72rem;border
 #page-apr .summary-table td:nth-child(5) { border-left:2px solid #93C5FD; }
 #page-apr .summary-table td:nth-child(9) { background:#FFFBEB; border-left:2px solid #FCD34D; }
 </style>
+<script>
+(function(){
+  var pwd = localStorage.getItem('bi_auth');
+  var correct =  + PASSWORD + ;
+  if(pwd !== correct){
+    document.body.innerHTML = '';
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#F4F6FB;display:flex;align-items:center;justify-content:center;z-index:99999;';
+    overlay.innerHTML = '<div style="background:#fff;border-radius:16px;padding:40px 48px;box-shadow:0 8px 32px rgba(67,97,238,.15);text-align:center;max-width:360px;width:90%;">'
+      + '<div style="font-size:2rem;margin-bottom:12px;">📊</div>'
+      + '<div style="font-size:1.2rem;font-weight:900;color:#1A2340;margin-bottom:6px;">鼎丰渠道二组 BI看板</div>'
+      + '<div style="font-size:.85rem;color:#6B7A99;margin-bottom:24px;">内部数据，请输入访问密码</div>'
+      + '<input id="pwd_input" type="password" placeholder="请输入密码" style="width:100%;padding:11px 16px;border:1.5px solid #E4E9F2;border-radius:8px;font-size:.95rem;outline:none;box-sizing:border-box;margin-bottom:12px;" onkeydown="if(event.key==='Enter')checkPwd()">'
+      + '<div id="pwd_err" style="color:#EF4444;font-size:.8rem;height:18px;margin-bottom:8px;"></div>'
+      + '<button onclick="checkPwd()" style="width:100%;padding:11px;background:#4361EE;color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;">进入看板</button>'
+      + '</div>';
+    document.body.appendChild(overlay);
+    setTimeout(function(){ document.getElementById('pwd_input').focus(); }, 100);
+  }
+  window.checkPwd = function(){
+    var v = document.getElementById('pwd_input').value;
+    if(v === correct){
+      localStorage.setItem('bi_auth', correct);
+      location.reload();
+    } else {
+      document.getElementById('pwd_err').textContent = '密码错误，请重试';
+      document.getElementById('pwd_input').value = '';
+      document.getElementById('pwd_input').focus();
+    }
+  };
+})();
+</script>
 </head>
 <body>
 
