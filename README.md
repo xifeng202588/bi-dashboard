@@ -1,8 +1,8 @@
-# 鼎丰渠道二组 BI 看板
+# DF Channel Group 2 - BI Dashboard
 
-| 看板 | 链接 |
-|------|------|
-| 渠道二组（4-7组）| [查看](./index.html) |
-| 拓展四组 | [查看](./expand_group4.html) |
+| Dashboard | Link |
+|-----------|------|
+| Channel Group 4-7 | [View](./index.html) |
+| Expansion Group 4 | [View](./expand_group4.html) |
 
-> 数据自动更新，最后更新：2026-04-04
+> Auto-updated daily. Last update: 2026-04-04
