@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>渠道二组 BI 看板 · 4-7组 · 2026年4月</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ============================================================
+   Design System — 渠道二组 BI 看板  浅色版 v2
+   主色: 靛蓝 #4361EE  辅色: 翠绿 #2EC4B6  警告: 橙 #FF9F1C
+   背景: 浅灰蓝 #F4F6FB  卡片: 纯白  文字: #1A2340 / #4A5568
+   ============================================================ */
+:root{
+  --bg:#F4F6FB;
+  --surface:#FFFFFF;
+  --card:#FFFFFF;
+  --border:#E4E9F2;
+  --border-strong:#C9D3E8;
+
+  --indigo:#4361EE;
+  --indigo-lt:#EEF1FD;
+  --indigo-mid:#8FA3F8;
+  --teal:#2EC4B6;
+  --teal-lt:#E8FAF8;
+  --orange:#FF9F1C;
+  --orange-lt:#FFF4E6;
+  --rose:#F72585;
+  --rose-lt:#FEE8F3;
+  --green:#10B981;
+  --green-lt:#D1FAE5;
+  --red:#EF4444;
+
+  --text:#1A2340;
+  --text2:#374151;
+  --sub:#6B7A99;
+  --muted:#A0AABF;
+
+  --shadow-sm:0 1px 3px rgba(67,97,238,.08),0 2px 8px rgba(67,97,238,.06);
+  --shadow-md:0 4px 16px rgba(67,97,238,.1),0 1px 4px rgba(0,0,0,.06);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;}
+
+/* ── 顶栏 ── */
+.topbar{background:#FFFFFF;border-bottom:2px solid var(--border);padding:0 32px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+.tl{display:flex;align-items:center;}
+.logo{font-weight:900;font-size:1.15rem;color:var(--indigo);white-space:nowrap;letter-spacing:-.02em;}
+.logo span{color:var(--text2);font-weight:500;}
+.topbar-sep{width:1px;height:26px;background:var(--border);margin:0 18px;}
+.topbar-right{display:flex;align-items:center;gap:18px;}
+.status{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--green);font-weight:700;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.clock{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--sub);background:var(--bg);padding:4px 10px;border-radius:6px;}
+
+/* ── 月份 Tab ── */
+.month-tabs{display:flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:3px;}
+.mtab{display:flex;align-items:center;gap:7px;padding:6px 16px;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:700;color:var(--sub);transition:all .2s;user-select:none;}
+.mtab:hover{color:var(--text2);background:rgba(67,97,238,.06);}
+.mtab.active{color:#FFFFFF;background:var(--indigo);box-shadow:0 2px 10px rgba(67,97,238,.35);}
+.mtab-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.7);flex-shrink:0;}
+.mtab-dot.empty{background:transparent;border:1.5px solid var(--muted);}
+.mtab.active .mtab-dot{background:#FFFFFF;}
+.mtab-badge{font-size:.6rem;padding:2px 7px;border-radius:20px;background:#E4E9F2;color:var(--sub);font-weight:700;}
+
+/* ── 小组 A/B Sub-Tab ── */
+.sub-tabs{display:flex;align-items:center;gap:4px;margin:0 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:3px;}
+.stab{display:flex;align-items:center;gap:5px;padding:5px 14px;border-radius:7px;cursor:pointer;font-size:.78rem;font-weight:700;color:var(--sub);transition:all .2s;white-space:nowrap;user-select:none;}
+.stab:hover{color:var(--text2);background:rgba(67,97,238,.06);}
+.stab.active{color:#FFFFFF;background:var(--teal);box-shadow:0 2px 8px rgba(46,196,182,.4);}
+.stab.active .stab-info{color:rgba(255,255,255,.8);}
+.stab-info{font-size:.65rem;font-weight:500;margin-left:4px;color:var(--muted);transition:color .2s;}
+
+/* ── 主区域 ── */
+.main{max-width:1440px;margin:0 auto;padding:24px 32px 60px;overflow-x:hidden;}
+.scroll-wrap{overflow-x:auto;border-radius:14px;}
+
+/* ── 欢迎横幅 ── */
+.welcome{background:linear-gradient(120deg,var(--indigo-lt) 0%,#F0FFF4 100%);border:1.5px solid var(--border-strong);border-left:4px solid var(--indigo);border-radius:14px;padding:20px 28px;margin-bottom:24px;position:relative;overflow:hidden;}
+.welcome::after{content:'📊';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:2.4rem;opacity:.12;}
+.welcome h2{font-size:1.35rem;font-weight:900;color:var(--text);margin-bottom:4px;letter-spacing:-.02em;}
+.welcome h2 em{color:var(--indigo);font-style:normal;}
+.welcome p{color:var(--sub);font-size:.85rem;}
+
+/* ── KPI 卡片 ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.kpi-card{background:#FFFFFF;border:1.5px solid var(--border);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden;transition:all .22s;box-shadow:var(--shadow-sm);}
+.kpi-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--border-strong);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;border-radius:14px 14px 0 0;}
+.kpi-card.c-indigo::before{background:linear-gradient(90deg,var(--indigo),var(--indigo-mid));}
+.kpi-card.c-teal::before{background:linear-gradient(90deg,var(--teal),#6EE7E2);}
+.kpi-card.c-orange::before{background:linear-gradient(90deg,var(--orange),#FFD080);}
+.kpi-card.c-rose::before{background:linear-gradient(90deg,var(--rose),#FF6EB4);}
+.kpi-card.c-green::before{background:linear-gradient(90deg,var(--green),#6EE7B7);}
+.kpi-card.c-amber::before{background:linear-gradient(90deg,#F59E0B,#FCD34D);}
+.kpi-card.c-blue::before{background:linear-gradient(90deg,#3B82F6,#93C5FD);}
+.kpi-card.c-cyan::before{background:linear-gradient(90deg,#06B6D4,#67E8F9);}
+.kpi-card.c-purple::before{background:linear-gradient(90deg,#7C3AED,#C4B5FD);}
+.kpi-card.c-red::before{background:linear-gradient(90deg,var(--red),#FCA5A5);}
+
+.kpi-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.kpi-label{font-size:.8rem;color:var(--sub);font-weight:600;letter-spacing:.01em;}
+.kpi-icon{font-size:1.25rem;}
+.kpi-value{font-size:2rem;font-weight:900;color:var(--text);line-height:1;margin-bottom:6px;letter-spacing:-.03em;}
+.kpi-value .unit{font-size:.78rem;color:var(--sub);font-weight:500;margin-left:3px;}
+.kpi-sub{color:var(--muted);font-size:.71rem;}
+
+.kpi-groups{margin-top:12px;padding-top:10px;border-top:1.5px solid var(--border);display:flex;flex-direction:column;gap:6px;}
+.kpi-group-row{display:flex;align-items:center;gap:8px;font-size:.72rem;}
+.kpi-group-name{color:var(--sub);width:32px;flex-shrink:0;font-weight:700;}
+.kpi-group-bar{flex:1;height:5px;background:#EEF1FD;border-radius:3px;overflow:hidden;}
+.kpi-group-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease;}
+.kpi-group-val{color:var(--text2);width:74px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:600;}
+
+/* ── Section 标题 ── */
+.section-title{display:flex;align-items:center;gap:12px;margin:28px 0 14px;}
+.st-icon{width:34px;height:34px;border-radius:9px;font-size:.88rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;}
+.st-text{font-size:1rem;font-weight:800;color:var(--text);letter-spacing:-.01em;}
+.st-line{flex:1;height:1.5px;background:var(--border);}
+
+/* ── 图表卡片 ── */
+.charts-row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.chart-card{background:#FFFFFF;border:1.5px solid var(--border);border-radius:14px;padding:22px;overflow:hidden;box-shadow:var(--shadow-sm);}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.chart-title{font-size:.92rem;font-weight:800;color:var(--text);}
+.chart-badge{font-size:.62rem;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.04em;}
+.chart-badge.live{background:var(--green-lt);color:#065F46;}
+.chart-badge.monthly{background:var(--indigo-lt);color:var(--indigo);}
+
+/* ── 数据表格 ── */
+.summary-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+.summary-table thead tr{background:var(--indigo);} 
+.summary-table th{padding:11px 16px;text-align:left;font-weight:700;color:rgba(255,255,255,.92);font-size:.71rem;letter-spacing:.07em;text-transform:uppercase;}
+.summary-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--text2);}
+.summary-table td:first-child{font-weight:700;color:var(--text);}
+.summary-table tbody tr:hover td{background:#F7F9FF;}
+.summary-table .num{font-family:'IBM Plex Mono',monospace;color:var(--text2);font-weight:600;}
+.summary-table .total td{background:var(--indigo-lt);border-top:2px solid var(--indigo);font-weight:800;color:var(--indigo);}
+.summary-table .total .num{color:var(--indigo);}
+.summary-table .profit-pos{color:var(--green)!important;font-weight:700;}
+
+footer{text-align:center;padding:28px;color:var(--muted);font-size:.72rem;border-top:1.5px solid var(--border);margin-top:48px;background:#FAFBFD;}
+
+@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.charts-row2{grid-template-columns:1fr;}}
+@media(max-width:768px){.kpi-grid{grid-template-columns:1fr;}.main{padding:16px;}.topbar{padding:0 16px;}}
+
+/* 4月表格列分组视觉 */
+#page-apr .summary-table th { font-size:.75rem; padding:9px 10px; }
+/* 目标/日列不加分割线 */
+#page-apr .summary-table td:nth-child(5),
+#page-apr .summary-table td:nth-child(6),
+#page-apr .summary-table td:nth-child(7),
+#page-apr .summary-table td:nth-child(8) { background:#F8FAFF; }
+#page-apr .summary-table td:nth-child(5) { border-left:2px solid #93C5FD; }
+#page-apr .summary-table td:nth-child(9) { background:#FFFBEB; border-left:2px solid #FCD34D; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tl">
+    <div class="logo">鼎丰渠道二组</div>
+    <div class="topbar-sep"></div>
+    <!-- 月份 Tab -->
+    <div class="month-tabs">
+      <div class="mtab active" id="tab-apr" onclick="switchMonth('apr',this)">
+        <span class="mtab-dot"></span>4月
+        <span class="mtab-badge" style="background:var(--teal-lt);color:var(--teal);">已更新4.1</span>
+      </div>
+      <div class="mtab" id="tab-mar" onclick="switchMonth('mar',this)">
+        <span class="mtab-dot"></span>3月
+      </div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="status"><span class="status-dot"></span> 数据已更新</div>
+    <div class="clock" id="clock"></div>
+  </div>
+</div>
+
+<div class="main">
+
+<div id="page-mar" style="display:none;">
+<div class="welcome">
+  <h2>渠道二组<em>数据看板</em>（4-7组）</h2>
+  <p>数据区间：2026-03-01 至 2026-03-31 · 4组/5组/6组/7组 · 全量产品数据</p>
+</div>
+
+<!-- 核心 KPI -->
+<div class="kpi-grid">
+  <div class="kpi-card c-teal">
+    <div class="kpi-header"><span class="kpi-label">总营收</span><span class="kpi-icon">💰</span></div>
+    <div class="kpi-value">1,210.4<span class="unit">万</span></div>
+    <div class="kpi-sub">月充值 + 月商务收入</div>
+    <div class="kpi-groups">
+      <div class="kpi-group-row"><span class="kpi-group-name">4组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:86%;background:var(--teal);"></div></div><span class="kpi-group-val">365.8万</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">5组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:100%;background:var(--teal);"></div></div><span class="kpi-group-val">425.0万</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">6组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:71%;background:var(--teal);"></div></div><span class="kpi-group-val">304.0万</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">7组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:27%;background:var(--teal);"></div></div><span class="kpi-group-val">115.6万</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-card c-rose">
+    <div class="kpi-header"><span class="kpi-label">总支出</span><span class="kpi-icon">🔥</span></div>
+    <div class="kpi-value">440.0<span class="unit">万</span></div>
+    <div class="kpi-sub">渠道支出 + CDN + 业务 + 商务</div>
+    <div class="kpi-groups">
+      <div class="kpi-group-row"><span class="kpi-group-name">4组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:73%;background:var(--rose);"></div></div><span class="kpi-group-val">113.9万</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">5组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:100%;background:var(--rose);"></div></div><span class="kpi-group-val">156.7万</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">6组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:81%;background:var(--rose);"></div></div><span class="kpi-group-val">126.3万</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">7组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:28%;background:var(--rose);"></div></div><span class="kpi-group-val">43.1万</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-card c-green">
+    <div class="kpi-header"><span class="kpi-label">净利润</span><span class="kpi-icon">📈</span></div>
+    <div class="kpi-value">702.1<span class="unit">万</span></div>
+    <div class="kpi-sub">总营收 - 总支出</div>
+    <div class="kpi-groups">
+      <div class="kpi-group-row"><span class="kpi-group-name">4组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:100%;background:var(--green);"></div></div><span class="kpi-group-val">251.9万</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">5组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:92%;background:var(--green);"></div></div><span class="kpi-group-val">232.1万</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">6组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:61%;background:var(--green);"></div></div><span class="kpi-group-val">153.3万</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">7组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:26%;background:var(--green);"></div></div><span class="kpi-group-val">64.8万</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-card c-amber">
+    <div class="kpi-header"><span class="kpi-label">ROI</span><span class="kpi-icon">🎯</span></div>
+    <div class="kpi-value">2.75</div>
+    <div class="kpi-sub">总营收 / 总支出</div>
+    <div class="kpi-groups">
+      <div class="kpi-group-row"><span class="kpi-group-name">4组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:100%;background:var(--amber);"></div></div><span class="kpi-group-val">3.21</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">5组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:84%;background:var(--amber);"></div></div><span class="kpi-group-val">2.71</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">6组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:75%;background:var(--amber);"></div></div><span class="kpi-group-val">2.41</span></div>
+      <div class="kpi-group-row"><span class="kpi-group-name">7组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:83%;background:var(--amber);"></div></div><span class="kpi-group-val">2.68</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 第二排 KPI -->
+<div class="kpi-grid">
+  <div class="kpi-card c-indigo">
+    <div class="kpi-header"><span class="kpi-label">总日活</span><span class="kpi-icon">👥</span></div>
+    <div class="kpi-value">85.8<span class="unit">万</span></div>
+    <div class="kpi-sub">4-7组平均日活汇总</div>
+  </div>
+  <div class="kpi-card c-indigo">
+    <div class="kpi-header"><span class="kpi-label">日均新增</span><span class="kpi-icon">🆕</span></div>
+    <div class="kpi-value">22.6<span class="unit">万</span></div>
+    <div class="kpi-sub">4-7组平均日新增汇总</div>
+  </div>
+  <div class="kpi-card c-teal">
+    <div class="kpi-header"><span class="kpi-label">平均次留</span><span class="kpi-icon">📊</span></div>
+    <div class="kpi-value">13.8<span class="unit">%</span></div>
+    <div class="kpi-sub">加权平均</div>
+  </div>
+  <div class="kpi-card c-green">
+    <div class="kpi-header"><span class="kpi-label">平均7留</span><span class="kpi-icon">📈</span></div>
+    <div class="kpi-value">4.9<span class="unit">%</span></div>
+    <div class="kpi-sub">加权平均</div>
+  </div>
+</div>
+
+<!-- 图表区 -->
+<div class="section-title">
+  <div class="st-icon">📊</div>
+  <span class="st-text">各组对比分析</span>
+  <div class="st-line"></div>
+</div>
+
+<div class="charts-row2">
+  <div class="chart-card">
+    <div class="chart-header">
+      <span class="chart-title">各组营收 vs 支出</span>
+      <span class="chart-badge monthly">3月</span>
+    </div>
+    <canvas id="revenueChart" height="200"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-header">
+      <span class="chart-title">各组 ROI 对比</span>
+      <span class="chart-badge monthly">3月</span>
+    </div>
+    <canvas id="roiChart" height="200"></canvas>
+  </div>
+</div>
+
+<div class="charts-row2">
+  <div class="chart-card">
+    <div class="chart-header">
+      <span class="chart-title">各组利润占比</span>
+      <span class="chart-badge live">实时</span>
+    </div>
+    <canvas id="profitPieChart" height="220"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-header">
+      <span class="chart-title">各组日活占比</span>
+      <span class="chart-badge live">实时</span>
+    </div>
+    <canvas id="dauPieChart" height="220"></canvas>
+  </div>
+</div>
+
+<!-- 大组汇总表 -->
+<div class="section-title">
+  <div class="st-icon">📋</div>
+  <span class="st-text">大组数据汇总（4-7组）</span>
+  <div class="st-line"></div>
+</div>
+
+<div class="chart-card" style="padding:0;overflow:hidden;">
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>大组</th>
+        <th>月充值</th>
+        <th>月商务收入</th>
+        <th>总营收</th>
+        <th>渠道支出</th>
+        <th>总支出</th>
+        <th>净利润</th>
+        <th>ROI</th>
+        <th>日活</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>4组</td>
+        <td class="num">32.7万</td>
+        <td class="num">344.1万</td>
+        <td class="num">365.8万</td>
+        <td class="num">100.6万</td>
+        <td class="num">113.9万</td>
+        <td class="num profit-pos">251.9万</td>
+        <td class="num" style="color:var(--orange)">3.21</td>
+        <td class="num">25.8万</td>
+      </tr>
+      <tr>
+        <td>5组</td>
+        <td class="num">37.1万</td>
+        <td class="num">387.9万</td>
+        <td class="num">425.0万</td>
+        <td class="num">150.6万</td>
+        <td class="num">156.7万</td>
+        <td class="num profit-pos">232.1万</td>
+        <td class="num" style="color:var(--orange)">2.71</td>
+        <td class="num">32.9万</td>
+      </tr>
+      <tr>
+        <td>6组</td>
+        <td class="num">20.8万</td>
+        <td class="num">283.2万</td>
+        <td class="num">304.0万</td>
+        <td class="num">121.3万</td>
+        <td class="num">126.3万</td>
+        <td class="num profit-pos">153.3万</td>
+        <td class="num" style="color:var(--orange)">2.41</td>
+        <td class="num">21.1万</td>
+      </tr>
+      <tr>
+        <td>7组</td>
+        <td class="num">3.9万</td>
+        <td class="num">111.7万</td>
+        <td class="num">115.6万</td>
+        <td class="num">39.8万</td>
+        <td class="num">43.1万</td>
+        <td class="num profit-pos">64.8万</td>
+        <td class="num" style="color:var(--orange)">2.68</td>
+        <td class="num">6.0万</td>
+      </tr>
+      <tr class="total">
+        <td>合计</td>
+        <td class="num">94.5万</td>
+        <td class="num">1,126.9万</td>
+        <td class="num">1,210.4万</td>
+        <td class="num">440.0万</td>
+        <td class="num">412.3万</td>
+        <td class="num" style="color:#86EFAC">702.1万</td>
+        <td class="num" style="color:var(--orange)">2.75</td><td class="num" style="background:#F3F4F6;color:#A0AABF;font-weight:800;">—</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 产品明细 -->
+<div class="section-title">
+  <div class="st-icon">🏆</div>
+  <span class="st-text">产品利润排行榜（4-7组）</span>
+  <div class="st-line"></div>
+</div>
+
+<div class="chart-card" style="padding:0;overflow:hidden;">
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>产品名</th>
+        <th>小组</th>
+        <th>日活</th>
+        <th>总营收</th>
+        <th>总支出</th>
+        <th>净利润</th>
+        <th>ROI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>小萝莉</td><td>5-B</td><td class="num">8.8万</td><td class="num">117.0万</td><td class="num">52.3万</td><td class="num profit-pos">64.7万</td><td class="num">2.24</td></tr>
+      <tr><td>2</td><td>乱伦日记</td><td>4-A</td><td class="num">6.6万</td><td class="num">99.0万</td><td class="num">37.1万</td><td class="num profit-pos">62.0万</td><td class="num">2.67</td></tr>
+      <tr><td>3</td><td>红果破解版</td><td>4-A</td><td class="num">5.6万</td><td class="num">79.0万</td><td class="num">27.4万</td><td class="num profit-pos">51.6万</td><td class="num">2.88</td></tr>
+      <tr><td>4</td><td>91蜜桃</td><td>6-A</td><td class="num">5.2万</td><td class="num">90.1万</td><td class="num">36.3万</td><td class="num profit-pos">53.8万</td><td class="num">2.48</td></tr>
+      <tr><td>5</td><td>蜜桃破解版</td><td>5-A</td><td class="num">7.9万</td><td class="num">103.8万</td><td class="num">55.1万</td><td class="num profit-pos">48.6万</td><td class="num">1.88</td></tr>
+      <tr><td>6</td><td>霸王插姬</td><td>4-A</td><td class="num">3.5万</td><td class="num">74.0万</td><td class="num">29.2万</td><td class="num profit-pos">44.8万</td><td class="num">2.53</td></tr>
+      <tr><td>7</td><td>PornHub</td><td>6-B</td><td class="num">7.4万</td><td class="num">91.5万</td><td class="num">53.1万</td><td class="num profit-pos">38.3万</td><td class="num">1.72</td></tr>
+      <tr><td>8</td><td>SmeetH</td><td>5-B</td><td class="num">5.9万</td><td class="num">77.8万</td><td class="num">39.7万</td><td class="num profit-pos">38.1万</td><td class="num">1.96</td></tr>
+      <tr><td>9</td><td>七度空间</td><td>5-B</td><td class="num">4.4万</td><td class="num">74.3万</td><td class="num">38.0万</td><td class="num profit-pos">36.3万</td><td class="num">1.95</td></tr>
+      <tr><td>10</td><td>白虎嫩穴</td><td>7-A</td><td class="num">1.4万</td><td class="num">39.0万</td><td class="num">10.7万</td><td class="num profit-pos">28.3万</td><td class="num">3.65</td></tr>
+      <tr><td>11</td><td>deep色客</td><td>4-A</td><td class="num">1.3万</td><td class="num">27.2万</td><td class="num">2.4万</td><td class="num profit-pos">24.8万</td><td class="num">11.33</td></tr>
+      <tr><td>12</td><td>痴汉X版</td><td>5-A</td><td class="num">0.6万</td><td class="num">26.2万</td><td class="num">1.3万</td><td class="num profit-pos">24.9万</td><td class="num">20.15</td></tr>
+      <tr><td>13</td><td>爱豆Vlog</td><td>6-A</td><td class="num">2.9万</td><td class="num">43.7万</td><td class="num">20.2万</td><td class="num profit-pos">23.5万</td><td class="num">2.16</td></tr>
+      <tr><td>14</td><td>芒果破解</td><td>4-A</td><td class="num">1.2万</td><td class="num">25.6万</td><td class="num">6.1万</td><td class="num profit-pos">19.4万</td><td class="num">4.20</td></tr>
+      <tr><td>15</td><td>推特.中国</td><td>7-A</td><td class="num">1.8万</td><td class="num">31.0万</td><td class="num">13.6万</td><td class="num profit-pos">17.3万</td><td class="num">2.28</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- /page-mar -->
+
+<!-- 4月页面（默认显示，3月默认隐藏） -->
+<div id="page-apr">
+
+  <!-- 顶部左右分栏：欢迎+数据概况 / 进量完成率 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;align-items:stretch;">
+
+    <!-- 左栏：欢迎横幅 + 数据来源 & 充值（合并） -->
+    <div style="background:linear-gradient(160deg,var(--indigo-lt) 0%,#ECFDF5 100%);border:1.5px solid #A7F3D0;border-left:4px solid var(--indigo);border-radius:14px;padding:28px 28px;position:relative;overflow:hidden;min-height:200px;">
+      <div style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:2.4rem;opacity:.08;">📊</div>
+      <h2 style="font-size:1.25rem;font-weight:900;color:var(--text);margin-bottom:4px;letter-spacing:-.02em;">渠道二组<em style="color:var(--indigo);font-style:normal;">数据看板</em>（4-7组）</h2>
+      <p style="color:var(--sub);font-size:.82rem;margin-bottom:14px;">数据区间：2026-04-01 至 2026-04-30 · 4组/5组/6组/7组</p>
+      <div style="border-top:1px solid #A7F3D0;padding-top:10px;font-size:.82rem;color:#065F46;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;font-weight:700;">
+          <span>✅</span><span>4月1日&2日数据已更新 · 4-7组33款产品全部匹配</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;">
+          <span style="background:#D1FAE5;border-radius:6px;padding:3px 10px;font-weight:700;white-space:nowrap;">✅ 4-7组充值：<strong>26,200元</strong></span>
+          <span style="background:#FEF3C7;color:#92400E;border-radius:6px;padding:3px 10px;font-weight:700;white-space:nowrap;">⚠️ 未匹配：<strong>86,458元</strong>（仅展示）</span>
+          <span style="background:#FEE2E2;color:#991B1B;border-radius:6px;padding:3px 10px;font-weight:700;white-space:nowrap;">🔗 渠道码：<strong>2,310元</strong>（仅展示）</span>
+          <span style="background:#EEF1FD;color:#4361EE;border-radius:6px;padding:3px 10px;font-weight:700;white-space:nowrap;">全站总充值：<strong>114,968元</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右栏：进量完成率（最新日期在前，可滚动） -->
+    <div style="background:#F8FAFF;border:1.5px solid #C9D3E8;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;min-height:200px;">
+      <div style="font-weight:700;color:#1A2340;margin-bottom:10px;font-size:.85rem;">📊 各组进量完成率 <span style="font-size:.72rem;color:#A0AABF;font-weight:400;">· 最新在前 · 可滚动</span></div>
+      <div style="overflow-y:auto;flex:1;border-radius:8px;border:1px solid #E4E9F2;min-height:140px;">
+        <table style="width:100%;border-collapse:collapse;font-size:.8rem;">
+          <thead style="position:sticky;top:0;z-index:2;">
+            <tr style="background:#4361EE;">
+              <th style="padding:7px 12px;text-align:left;color:#fff;font-weight:700;min-width:68px;">日期</th>
+              <th style="padding:7px 8px;text-align:center;color:#fff;font-weight:700;">4组</th>
+              <th style="padding:7px 8px;text-align:center;color:#fff;font-weight:700;">5组</th>
+              <th style="padding:7px 8px;text-align:center;color:#fff;font-weight:700;">6组</th>
+              <th style="padding:7px 8px;text-align:center;color:#fff;font-weight:700;">7组</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 最新日期在最上方 -->
+            <tr style="border-bottom:1px solid #E4E9F2;background:#F0FFF9;">
+              <td style="padding:7px 12px;font-weight:800;color:#065F46;white-space:nowrap;">4月3日 <span style="font-size:.65rem;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:3px;">最新</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">138.6%🚀</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#EEF1FD;color:#4361EE;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">84.3%▲</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">106.9%🔥</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">261.9%🚀</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid #E4E9F2;background:#fff;">
+              <td style="padding:7px 12px;font-weight:700;color:#4361EE;white-space:nowrap;">4月2日</td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#EEF1FD;color:#4361EE;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">80.1%</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#FFF4E6;color:#FF9F1C;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">54.0%</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">81.1%</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">176.3%🚀</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid #E4E9F2;background:#fff;">
+              <td style="padding:7px 12px;font-weight:700;color:#4361EE;white-space:nowrap;">4月1日</td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#FFF4E6;color:#FF9F1C;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">61.1%</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#FEE2E2;color:#EF4444;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">51.9%</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#FFF4E6;color:#FF9F1C;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">75.1%</span></td>
+              <td style="padding:7px 8px;text-align:center;"><span style="background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:4px;font-weight:700;font-size:.78rem;">89.8%🔥</span></td>
+            </tr>
+            <tr style="background:#FFFBEB;">
+              <td style="padding:7px 12px;font-weight:700;color:#92400E;white-space:nowrap;">环比趋势</td>
+              <td style="padding:7px 8px;text-align:center;color:#10B981;font-weight:700;font-size:.78rem;">▲19.0%</td>
+              <td style="padding:7px 8px;text-align:center;color:#10B981;font-weight:700;font-size:.78rem;">▲2.1%</td>
+              <td style="padding:7px 8px;text-align:center;color:#10B981;font-weight:700;font-size:.78rem;">▲6.0%</td>
+              <td style="padding:7px 8px;text-align:center;color:#10B981;font-weight:700;font-size:.78rem;">▲86.5%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- 4月预算汇总卡片 -->
+  <div class="kpi-grid">
+    <div class="kpi-card c-indigo">
+      <div class="kpi-header"><span class="kpi-label">4月总预算（4-7组）</span><span class="kpi-icon">📋</span></div>
+      <div class="kpi-value">461.1<span class="unit">万</span></div>
+      <div class="kpi-sub">4组+5组+6组+7组预算合计</div>
+      <div class="kpi-groups">
+        <div class="kpi-group-row"><span class="kpi-group-name">5组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:100%;background:var(--indigo);"></div></div><span class="kpi-group-val">160.5万</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">4组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:89%;background:var(--indigo);"></div></div><span class="kpi-group-val">142.2万</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">6组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:72%;background:var(--indigo);"></div></div><span class="kpi-group-val">114.8万</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">7组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:27%;background:var(--indigo);"></div></div><span class="kpi-group-val">43.6万</span></div>
+      </div>
+    </div>
+    <div class="kpi-card c-teal">
+      <div class="kpi-header"><span class="kpi-label">每日总进量目标</span><span class="kpi-icon">🎯</span></div>
+      <div class="kpi-value">25.4<span class="unit">万</span></div>
+      <div class="kpi-sub">四组每日渠道新增合计</div>
+      <div class="kpi-groups">
+        <div class="kpi-group-row"><span class="kpi-group-name">5组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:100%;background:var(--teal);"></div></div><span class="kpi-group-val">85,541/日</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">4组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:89%;background:var(--teal);"></div></div><span class="kpi-group-val">75,777/日</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">6组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:78%;background:var(--teal);"></div></div><span class="kpi-group-val">66,919/日</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">7组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:31%;background:var(--teal);"></div></div><span class="kpi-group-val">26,286/日</span></div>
+      </div>
+    </div>
+    <div class="kpi-card c-amber">
+      <div class="kpi-header"><span class="kpi-label">4.1+4.2累计充值</span><span class="kpi-icon">💰</span></div>
+      <div class="kpi-value">5.05<span class="unit">万</span></div>
+      <div class="kpi-sub">4.1: 26,200元 · 4.2: 24,210元</div>
+      <div class="kpi-groups">
+        <div class="kpi-group-row"><span class="kpi-group-name">5组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:100%;background:var(--orange);"></div></div><span class="kpi-group-val">18,050元</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">4组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:96%;background:var(--orange);"></div></div><span class="kpi-group-val">17,500元</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">6组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:60%;background:var(--orange);"></div></div><span class="kpi-group-val">10,920元</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">7组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:16%;background:var(--orange);"></div></div><span class="kpi-group-val">2,940元</span></div>
+      </div>
+    </div>
+    <div class="kpi-card c-green">
+      <div class="kpi-header"><span class="kpi-label">4.1+4.2累计下载</span><span class="kpi-icon">📈</span></div>
+      <div class="kpi-value">37.2<span class="unit">万</span></div>
+      <div class="kpi-sub">4.1: 164,543 · 4.2: 207,474</div>
+      <div class="kpi-groups">
+        <div class="kpi-group-row"><span class="kpi-group-name">6组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:100%;background:var(--green);"></div></div><span class="kpi-group-val">104,546次</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">5组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:90%;background:var(--green);"></div></div><span class="kpi-group-val">93,871次</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">4组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:97%;background:var(--green);"></div></div><span class="kpi-group-val">106,981次</span></div>
+        <div class="kpi-group-row"><span class="kpi-group-name">7组</span><div class="kpi-group-bar"><div class="kpi-group-bar-fill" style="width:66%;background:var(--green);"></div></div><span class="kpi-group-val">69,927次</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4月预算图表 -->
+  <div style="display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-bottom:16px;align-items:stretch;">
+    <!-- 左：预算分布 -->
+    <div class="chart-card" style="display:flex;flex-direction:column;">
+      <div class="chart-header">
+        <span class="chart-title">各组4月预算分布</span>
+        <span class="chart-badge monthly">4月规划</span>
+      </div>
+      <div style="flex:1;position:relative;min-height:0;">
+        <canvas id="apr-budget-bar" style="width:100%;height:100%;"></canvas>
+      </div>
+    </div>
+    <!-- 右：进量目标+实际+完成率 合并图 -->
+    <div class="chart-card" style="display:flex;flex-direction:column;">
+      <div class="chart-header">
+        <span class="chart-title">每日进量目标 vs 实际完成量</span>
+        <span style="font-size:.72rem;color:var(--muted);">含完成率标注</span>
+      </div>
+      <div style="flex:1;position:relative;min-height:0;">
+        <canvas id="apr-daily-bar" style="width:100%;height:100%;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- 大组汇总表 -->
+  <div class="section-title">
+    <div class="st-icon">📋</div>
+    <span class="st-text">4月各组预算汇总 <span style="font-size:.75rem;color:var(--muted);font-weight:400;">· ▶点击组别展开产品清单</span></span>
+    <div class="st-line"></div>
+  </div>
+  <div class="chart-card" style="padding:0;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow-sm);">
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>大组</th><th>负责人</th><th>4月预算</th><th>目标/日</th>
+          <th style="background:#1E3A8A;color:#93C5FD;">4.1下载</th><th style="background:#78350F;color:#FCD34D;">4.1完成率</th>
+          <th style="background:#065F46;color:#6EE7B7;">4.2下载</th><th style="background:#7C3AED;color:#DDD6FE;">4.2完成率</th>
+          <th style="background:#10B981;color:#fff;">4.3下载</th><th style="background:#059669;color:#fff;">4.3完成率</th>
+          <th style="background:#374151;color:#D1D5DB;">趋势</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 4组 -->
+        <tr class="product-summary-row" onclick="toggleDetail('grp4')" style="cursor:pointer;">
+          <td><span id="arr-grp4" style="color:var(--indigo);font-size:.65rem;margin-right:5px;">▶</span><strong>4组</strong></td>
+          <td>林维夏/马云皓</td><td class="num">142.2万</td><td class="num">75,777</td>
+          <td class="num">46,312</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">61.1%</td>
+          <td class="num good">60,669</td><td class="num" style="background:#EEF1FD;color:#4361EE;font-weight:700;">80.1%</td>
+          <td class="num" style="color:#10B981;">▲19.0%</td>
+          <td class="num good">105,015</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">138.6%🔥</td>
+          <td class="num" style="color:#10B981;">▲趋势↑</td>
+        </tr>
+        <tr id="det-grp4" style="display:none;background:#F8FAFF;">
+          <td colspan="9" style="padding:8px 16px 8px 32px;">
+            <table style="width:100%;border-collapse:collapse;font-size:.78rem;">
+              <thead><tr style="background:#EEF1FD;"><th style="padding:4px 10px;text-align:left;">产品</th><th style="padding:4px 8px;text-align:right;">编号</th><th style="padding:4px 8px;text-align:right;">预算</th><th style="padding:4px 8px;text-align:right;">目标/日</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 10px;">乱伦日记</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-72</td><td style="padding:4px 8px;text-align:right;">37.4万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">19,515</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">红果破解版</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-117</td><td style="padding:4px 8px;text-align:right;">29.8万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">15,476</td></tr>
+                <tr><td style="padding:4px 10px;">霸王插姬</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-134</td><td style="padding:4px 8px;text-align:right;">27.9万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">15,591</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">豆包破解版</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-132</td><td style="padding:4px 8px;text-align:right;">9.2万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">4,451</td></tr>
+                <tr><td style="padding:4px 10px;">肯德姬</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-78</td><td style="padding:4px 8px;text-align:right;">10.0万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">5,300</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">51青楼</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-92</td><td style="padding:4px 8px;text-align:right;">7.4万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">4,122</td></tr>
+                <tr><td style="padding:4px 10px;">deep色客</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-93</td><td style="padding:4px 8px;text-align:right;">10.3万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">5,589</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">芒果破解</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-76</td><td style="padding:4px 8px;text-align:right;">9.7万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">5,500</td></tr>
+                <tr><td style="padding:4px 10px;">51漫画</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-84</td><td style="padding:4px 8px;text-align:right;">0.4万</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">233</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">小恶魔</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-85</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">—</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">—</td></tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <!-- 5组 -->
+        <tr class="product-summary-row" onclick="toggleDetail('grp5')" style="cursor:pointer;">
+          <td><span id="arr-grp5" style="color:var(--indigo);font-size:.65rem;margin-right:5px;">▶</span><strong>5组</strong></td>
+          <td>皓宸</td><td class="num">160.5万</td><td class="num">85,541</td>
+          <td class="num">44,393</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">51.9%</td>
+          <td class="num good">46,170</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">54.0%</td>
+          <td class="num" style="color:#10B981;">▲2.1%</td>
+          <td class="num good">72,143</td><td class="num" style="background:#EEF1FD;color:#4361EE;font-weight:700;">84.3%</td>
+          <td class="num" style="color:#10B981;">▲趋势↑</td>
+        </tr>
+        <tr id="det-grp5" style="display:none;background:#F8FAFF;">
+          <td colspan="9" style="padding:8px 16px 8px 32px;">
+            <table style="width:100%;border-collapse:collapse;font-size:.78rem;">
+              <thead><tr style="background:#EEF1FD;"><th style="padding:4px 10px;text-align:left;">产品</th><th style="padding:4px 8px;text-align:right;">编号</th><th style="padding:4px 8px;text-align:right;">预算</th><th style="padding:4px 8px;text-align:right;">目标/日</th><th style="padding:4px 8px;text-align:right;">小组</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 10px;">蜜桃破解版</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-62</td><td style="padding:4px 8px;text-align:right;">39.2万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">21,847</td><td style="padding:4px 8px;text-align:right;"><span style="background:#E8FAF8;color:var(--teal);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-A</span></td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">痴汉X版</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-80</td><td style="padding:4px 8px;text-align:right;">9.9万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">5,633</td><td style="padding:4px 8px;text-align:right;"><span style="background:#E8FAF8;color:var(--teal);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-A</span></td></tr>
+                <tr><td style="padding:4px 10px;">禁漫社</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-153</td><td style="padding:4px 8px;text-align:right;">2.6万</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">1,111</td><td style="padding:4px 8px;text-align:right;"><span style="background:#E8FAF8;color:var(--teal);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-A</span></td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">香奶兒</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-142</td><td style="padding:4px 8px;text-align:right;">1.2万</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">644</td><td style="padding:4px 8px;text-align:right;"><span style="background:#E8FAF8;color:var(--teal);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-A</span></td></tr>
+                <tr><td style="padding:4px 10px;">十八汇</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-129</td><td style="padding:4px 8px;text-align:right;">1.5万</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">771</td><td style="padding:4px 8px;text-align:right;"><span style="background:#E8FAF8;color:var(--teal);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-A</span></td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">小萝莉</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-104</td><td style="padding:4px 8px;text-align:right;">44.2万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">21,797</td><td style="padding:4px 8px;text-align:right;"><span style="background:#EEF1FD;color:var(--indigo);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-B</span></td></tr>
+                <tr><td style="padding:4px 10px;">SmeetH</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-63</td><td style="padding:4px 8px;text-align:right;">29.4万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">16,145</td><td style="padding:4px 8px;text-align:right;"><span style="background:#EEF1FD;color:var(--indigo);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-B</span></td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">七度空间</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-94</td><td style="padding:4px 8px;text-align:right;">28.0万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">15,388</td><td style="padding:4px 8px;text-align:right;"><span style="background:#EEF1FD;color:var(--indigo);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-B</span></td></tr>
+                <tr><td style="padding:4px 10px;">花椒vlog</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-120</td><td style="padding:4px 8px;text-align:right;">2.1万</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">1,094</td><td style="padding:4px 8px;text-align:right;"><span style="background:#EEF1FD;color:var(--indigo);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-B</span></td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">RedTube大陆</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-127</td><td style="padding:4px 8px;text-align:right;">1.0万</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">444</td><td style="padding:4px 8px;text-align:right;"><span style="background:#EEF1FD;color:var(--indigo);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-B</span></td></tr>
+                <tr><td style="padding:4px 10px;">奶瓶</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-145</td><td style="padding:4px 8px;text-align:right;">1.3万</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">667</td><td style="padding:4px 8px;text-align:right;"><span style="background:#EEF1FD;color:var(--indigo);padding:1px 6px;border-radius:3px;font-size:.72rem;">5-B</span></td></tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <!-- 6组 -->
+        <tr class="product-summary-row" onclick="toggleDetail('grp6')" style="cursor:pointer;">
+          <td><span id="arr-grp6" style="color:var(--indigo);font-size:.65rem;margin-right:5px;">▶</span><strong>6组</strong></td>
+          <td>王纸/曹正华</td><td class="num">114.8万</td><td class="num">66,919</td>
+          <td class="num">50,246</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">75.1%</td>
+          <td class="num good">54,300</td><td class="num" style="background:#D1FAE5;color:#10B981;font-weight:700;">81.1%</td>
+          <td class="num" style="color:#10B981;">▲6.0%</td>
+          <td class="num good">71,527</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">106.9%🔥</td>
+          <td class="num" style="color:#10B981;">▲趋势↑</td>
+        </tr>
+        <tr id="det-grp6" style="display:none;background:#F8FAFF;">
+          <td colspan="9" style="padding:8px 16px 8px 32px;">
+            <table style="width:100%;border-collapse:collapse;font-size:.78rem;">
+              <thead><tr style="background:#FEE8F3;"><th style="padding:4px 10px;text-align:left;">产品</th><th style="padding:4px 8px;text-align:right;">编号</th><th style="padding:4px 8px;text-align:right;">预算</th><th style="padding:4px 8px;text-align:right;">目标/日</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 10px;">PornHub</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-143</td><td style="padding:4px 8px;text-align:right;">34.6万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">20,214</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">91蜜桃</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-131</td><td style="padding:4px 8px;text-align:right;">34.0万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">20,039</td></tr>
+                <tr><td style="padding:4px 10px;">爱豆Vlog</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-114</td><td style="padding:4px 8px;text-align:right;">16.5万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">9,809</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">51鉴片</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-133</td><td style="padding:4px 8px;text-align:right;">10.6万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">6,000</td></tr>
+                <tr><td style="padding:4px 10px;">小黄人</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-124</td><td style="padding:4px 8px;text-align:right;">9.9万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">5,690</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">91 Vlog</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-112</td><td style="padding:4px 8px;text-align:right;">9.2万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">5,167</td></tr>
+                <tr><td style="padding:4px 10px;">51社区</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-149</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">—</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">—</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">91动漫</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-151</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">—</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">—</td></tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <!-- 7组 -->
+        <tr class="product-summary-row" onclick="toggleDetail('grp7')" style="cursor:pointer;">
+          <td><span id="arr-grp7" style="color:var(--indigo);font-size:.65rem;margin-right:5px;">▶</span><strong>7组</strong></td>
+          <td>曹正华（兼）</td><td class="num">43.6万</td><td class="num">26,286</td>
+          <td class="num">23,592</td><td class="num" style="background:#D1FAE5;color:#10B981;font-weight:700;">89.8%</td>
+          <td class="num good">46,335</td><td class="num" style="background:#D1FAE5;color:#10B981;font-weight:700;">176.3% 🚀</td>
+          <td class="num" style="color:#10B981;">▲86.5%</td>
+          <td class="num good">68,840</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">261.9%🚀</td>
+          <td class="num" style="color:#10B981;">▲趋势↑</td>
+        </tr>
+        <tr id="det-grp7" style="display:none;background:#F8FAFF;">
+          <td colspan="9" style="padding:8px 16px 8px 32px;">
+            <table style="width:100%;border-collapse:collapse;font-size:.78rem;">
+              <thead><tr style="background:#FFF4E6;"><th style="padding:4px 10px;text-align:left;">产品</th><th style="padding:4px 8px;text-align:right;">编号</th><th style="padding:4px 8px;text-align:right;">预算</th><th style="padding:4px 8px;text-align:right;">目标/日</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 10px;">白虎嫩穴</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-137</td><td style="padding:4px 8px;text-align:right;">14.7万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">9,218</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">奶糖Baby</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-126</td><td style="padding:4px 8px;text-align:right;">14.2万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">8,442</td></tr>
+                <tr><td style="padding:4px 10px;">推特.中国</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-128</td><td style="padding:4px 8px;text-align:right;">11.7万</td><td style="padding:4px 8px;text-align:right;color:var(--teal);">6,721</td></tr>
+                <tr style="background:#f9f9f9;"><td style="padding:4px 10px;">91短视频</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">SF-152</td><td style="padding:4px 8px;text-align:right;">3.1万</td><td style="padding:4px 8px;text-align:right;color:var(--muted);">1,905</td></tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr class="total"><td>合计</td><td>—</td><td class="num">461.1万</td><td class="num">254,523</td><td class="num">164,543</td><td class="num" style="color:#FF9F1C;font-weight:800;">64.7%</td><td class="num">207,474</td><td class="num" style="color:#4361EE;font-weight:800;">81.5%</td><td class="num good">317,525</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:800;">124.8%🚀</td><td class="num" style="color:#10B981;font-weight:700;">▲43.3%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 产品明细 - 4组 -->
+  <div class="section-title"><div class="st-icon" style="background:#D1FAE5;color:#065F46;border:1.5px solid #6EE7B7;">4组</div><span class="st-text">4组产品明细（林维夏/马云皓）<span style="font-size:.75rem;color:var(--muted);font-weight:400;">· ▶点击产品展开每日明细</span></span><div class="st-line"></div></div>
+  <div class="chart-card" style="padding:0;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow-sm);">
+    <div class="scroll-wrap"><table class="summary-table"><thead><tr><th>产品</th><th>编号</th><th style="background:#065F46;color:#6EE7B7;">目标/日</th><th style="background:#1E3A8A;color:#93C5FD;">累计下载</th><th style="background:#1E3A8A;color:#93C5FD;">累计充值</th><th style="background:#78350F;color:#FCD34D;">均日完成率</th><th style="background:#374151;color:#D1D5DB;">下载趋势</th></tr></thead><tbody><tr class="product-summary-row" onclick="toggleDetail('sf72')" style="cursor:pointer;"><td><span id="arr-sf72" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>乱伦日记</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-72</td><td class="num" style="color:var(--teal)">19,515</td><td class="num" style="font-weight:700;">25,742</td><td class="num" style="font-weight:700;">4,390</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">66.0%</td><td class="num"><span style="color:#10B981;">▲29.3%</span></td></tr><tr id="det-sf72" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">11,228</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">57.5%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">3,140</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">51,881</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">67</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">14,514</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">74.4%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,250</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">56,683</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">30</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf117')" style="cursor:pointer;"><td><span id="arr-sf117" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>红果破解版</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-117</td><td class="num" style="color:var(--teal)">15,476</td><td class="num" style="font-weight:700;">20,456</td><td class="num" style="font-weight:700;">4,020</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">66.1%</td><td class="num"><span style="color:#10B981;">▲31.6%</span></td></tr><tr id="det-sf117" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">8,834</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">57.1%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">2,120</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">43,011</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">31</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">11,622</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">75.1%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,900</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">46,929</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">41</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf134')" style="cursor:pointer;"><td><span id="arr-sf134" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>霸王插姬</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-134</td><td class="num" style="color:var(--teal)">15,591</td><td class="num" style="font-weight:700;">16,589</td><td class="num" style="font-weight:700;">3,180</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">53.2%</td><td class="num"><span style="color:#10B981;">▲32.8%</span></td></tr><tr id="det-sf134" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7,126</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">45.7%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,120</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">28,047</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">17</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9,463</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">60.7%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">2,060</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">31,679</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">35</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf132')" style="cursor:pointer;"><td><span id="arr-sf132" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>豆包破解版</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-132</td><td class="num" style="color:var(--teal)">4,451</td><td class="num" style="font-weight:700;">18,365</td><td class="num" style="font-weight:700;">1,880</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">206.3%</td><td class="num"><span style="color:#10B981;">▲27.5%</span></td></tr><tr id="det-sf132" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">8,072</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">181.4%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">930</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">25,125</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">21</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">10,293</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">231.3%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">950</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">28,044</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">17</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf85')" style="cursor:pointer;"><td><span id="arr-sf85" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>小恶魔</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-85</td><td class="num" style="color:var(--teal)">—</td><td class="num" style="font-weight:700;">1,581</td><td class="num" style="font-weight:700;">940</td><td class="num" style="color:#A0AABF;font-weight:700;">—</td><td class="num"><span style="color:#10B981;">▲9.1%</span></td></tr><tr id="det-sf85" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">756</td><td style="padding:5px 10px;text-align:right;"><span style="color:#A0AABF;padding:1px 7px;border-radius:4px;font-weight:700;">—</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">710</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3,490</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">825</td><td style="padding:5px 10px;text-align:right;"><span style="color:#A0AABF;padding:1px 7px;border-radius:4px;font-weight:700;">—</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">230</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3,628</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf78')" style="cursor:pointer;"><td><span id="arr-sf78" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>肯德姬</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-78</td><td class="num" style="color:var(--teal)">5,300</td><td class="num" style="font-weight:700;">3,625</td><td class="num" style="font-weight:700;">1,150</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">34.2%</td><td class="num"><span style="color:#10B981;">▲31.9%</span></td></tr><tr id="det-sf78" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1,563</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">29.5%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">590</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">8,601</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">11</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">2,062</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">38.9%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">560</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9,063</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">15</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf84')" style="cursor:pointer;"><td><span id="arr-sf84" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>51漫画</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-84</td><td class="num" style="color:var(--teal)">233</td><td class="num" style="font-weight:700;">2,617</td><td class="num" style="font-weight:700;">600</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">561.4%</td><td class="num"><span style="color:#10B981;">▲14.3%</span></td></tr><tr id="det-sf84" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1,221</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">524.0%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">210</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">8,829</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1,396</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">599.1%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">390</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9,128</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">6</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf92')" style="cursor:pointer;"><td><span id="arr-sf92" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>51青楼</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-92</td><td class="num" style="color:var(--teal)">4,122</td><td class="num" style="font-weight:700;">10,413</td><td class="num" style="font-weight:700;">550</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">126.3%</td><td class="num"><span style="color:#10B981;">▲38.3%</span></td></tr><tr id="det-sf92" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4,369</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">106.0%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">150</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9,998</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">6,044</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">146.6%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">400</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">11,964</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">6</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf93')" style="cursor:pointer;"><td><span id="arr-sf93" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>deep色客</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-93</td><td class="num" style="color:var(--teal)">5,589</td><td class="num" style="font-weight:700;">2,417</td><td class="num" style="font-weight:700;">570</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">21.6%</td><td class="num"><span style="color:#10B981;">▲17.4%</span></td></tr><tr id="det-sf93" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1,112</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">19.9%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">140</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7,415</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1,305</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">23.3%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">430</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7,605</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">5</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf76')" style="cursor:pointer;"><td><span id="arr-sf76" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>芒果破解</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-76</td><td class="num" style="color:var(--teal)">5,500</td><td class="num" style="font-weight:700;">5,176</td><td class="num" style="font-weight:700;">220</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">47.1%</td><td class="num"><span style="color:#10B981;">▲54.8%</span></td></tr><tr id="det-sf76" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">2,031</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">36.9%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">110</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">8,766</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3,145</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">57.2%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">110</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9,653</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3</td></tr></tbody></table></td></tr><tr class="total"><td>4组合计（10款）</td><td></td><td class="num" style="color:var(--orange)">75,777</td><td class="num" style="color:var(--indigo);font-weight:800;">106,981</td><td class="num" style="color:var(--indigo);font-weight:800;">17,500</td><td class="num" style="background:#EEF1FD;color:#4361EE;font-weight:800;">70.6%</td><td></td></tr></tbody></table></div></div>
+
+  <!-- 产品明细 - 5组 -->
+  <div class="section-title">
+    <div class="st-icon" style="background:#EEF1FD;color:#4361EE;border:1.5px solid #8FA3F8;">5组</div>
+    <span class="st-text">5组产品明细（皓宸）<span style="font-size:.75rem;color:var(--muted);font-weight:400;">· ▶点击展开每日明细</span></span>
+    <div class="sub-tabs">
+      <div class="stab active" id="g5-tab-a" onclick="switchSubTab('g5','a',this)">5-A · 余笙<span class="stab-info">54.5万</span></div>
+      <div class="stab" id="g5-tab-b" onclick="switchSubTab('g5','b',this)">5-B · 陈里<span class="stab-info">106.0万</span></div>
+    </div>
+    <div class="st-line"></div>
+  </div>
+  <div class="chart-card" style="padding:0;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow-sm);">
+    <div class="scroll-wrap"><table class="summary-table"><thead><tr><th>产品</th><th>编号</th><th style="background:#065F46;color:#6EE7B7;">目标/日</th><th style="background:#1E3A8A;color:#93C5FD;">累计下载</th><th style="background:#1E3A8A;color:#93C5FD;">累计充值</th><th style="background:#78350F;color:#FCD34D;">均日完成率</th><th style="background:#374151;color:#D1D5DB;">下载趋势</th></tr></thead><tbody id="g5-body-a"><tr class="product-summary-row" onclick="toggleDetail('sf62')" style="cursor:pointer;"><td><span id="arr-sf62" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>蜜桃破解版</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-62</td><td class="num" style="color:var(--teal)">21,847</td><td class="num" style="font-weight:700;">22,146</td><td class="num" style="font-weight:700;">3,410</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">50.7%</td><td class="num"><span style="color:#10B981;">▲9.8%</span></td></tr><tr id="det-sf62" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">10,554</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">48.3%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,950</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">53,864</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">39</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">11,592</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">53.1%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,460</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">56,355</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">27</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf80')" style="cursor:pointer;"><td><span id="arr-sf80" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>痴汉X版</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-80</td><td class="num" style="color:var(--teal)">5,633</td><td class="num" style="font-weight:700;">1,159</td><td class="num" style="font-weight:700;">930</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">10.3%</td><td class="num"><span style="color:#10B981;">▲8.5%</span></td></tr><tr id="det-sf80" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">556</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">9.9%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">350</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">2,993</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">603</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">10.7%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">580</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">2,842</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">11</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf153')" style="cursor:pointer;"><td><span id="arr-sf153" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>禁漫社</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-153</td><td class="num" style="color:var(--teal)">1,111</td><td class="num" style="font-weight:700;">1,997</td><td class="num" style="font-weight:700;">860</td><td class="num" style="background:#EEF1FD;color:#4361EE;font-weight:700;">89.8%</td><td class="num"><span style="color:#10B981;">▲0.7%</span></td></tr><tr id="det-sf153" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">995</td><td style="padding:5px 10px;text-align:right;"><span style="background:#EEF1FD;color:#4361EE;padding:1px 7px;border-radius:4px;font-weight:700;">89.6%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">260</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">5,978</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">6</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1,002</td><td style="padding:5px 10px;text-align:right;"><span style="background:#EEF1FD;color:#4361EE;padding:1px 7px;border-radius:4px;font-weight:700;">90.2%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">600</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">6,174</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">12</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf142')" style="cursor:pointer;"><td><span id="arr-sf142" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>香奶兒</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-142</td><td class="num" style="color:var(--teal)">644</td><td class="num" style="font-weight:700;">980</td><td class="num" style="font-weight:700;">130</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">76.1%</td><td class="num"><span style="color:#10B981;">▲4.2%</span></td></tr><tr id="det-sf142" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">480</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">74.5%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">130</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3,894</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">2</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">500</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">77.6%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">0</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4,096</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">0</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf129')" style="cursor:pointer;"><td><span id="arr-sf129" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>十八汇</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-129</td><td class="num" style="color:var(--teal)">771</td><td class="num" style="font-weight:700;">1,230</td><td class="num" style="font-weight:700;">50</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">79.8%</td><td class="num"><span style="color:#10B981;">▲2.6%</span></td></tr><tr id="det-sf129" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">607</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">78.7%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">0</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">8,649</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">0</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">623</td><td style="padding:5px 10px;text-align:right;"><span style="background:#EEF1FD;color:#4361EE;padding:1px 7px;border-radius:4px;font-weight:700;">80.8%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">50</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">8,690</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1</td></tr></tbody></table></td></tr><tr class="total"><td>5-A小计（5款）</td><td></td><td class="num" style="color:var(--orange)">30,006</td><td class="num" style="color:var(--indigo);font-weight:800;">37,000</td><td class="num" style="color:var(--indigo);font-weight:800;">6,130</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:800;">61.6%</td><td></td></tr></tbody><tbody id="g5-body-b" style="display:none"><tr class="product-summary-row" onclick="toggleDetail('sf104')" style="cursor:pointer;"><td><span id="arr-sf104" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>小萝莉</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-104</td><td class="num" style="color:var(--teal)">21,797</td><td class="num" style="font-weight:700;">30,164</td><td class="num" style="font-weight:700;">7,800</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">69.2%</td><td class="num"><span style="color:#10B981;">▲5.5%</span></td></tr><tr id="det-sf104" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">14,678</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">67.3%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">4,340</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">59,051</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">86</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">15,486</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">71.0%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">3,460</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">59,835</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">75</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf63')" style="cursor:pointer;"><td><span id="arr-sf63" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>SmeetH</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-63</td><td class="num" style="color:var(--teal)">16,145</td><td class="num" style="font-weight:700;">14,010</td><td class="num" style="font-weight:700;">2,100</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">43.4%</td><td class="num"><span style="color:#EF4444;">▼2.8%</span></td></tr><tr id="det-sf63" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7,106</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">44.0%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,060</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">41,521</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">23</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">6,904</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">42.8%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,040</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">41,884</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">24</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf94')" style="cursor:pointer;"><td><span id="arr-sf94" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>七度空间</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-94</td><td class="num" style="color:var(--teal)">15,388</td><td class="num" style="font-weight:700;">14,495</td><td class="num" style="font-weight:700;">2,460</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">47.1%</td><td class="num"><span style="color:#10B981;">▲2.2%</span></td></tr><tr id="det-sf94" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7,168</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">46.6%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,240</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">25,112</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">23</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7,327</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">47.6%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,220</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">25,256</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">22</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf120')" style="cursor:pointer;"><td><span id="arr-sf120" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>花椒vlog</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-120</td><td class="num" style="color:var(--teal)">1,094</td><td class="num" style="font-weight:700;">926</td><td class="num" style="font-weight:700;">720</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">42.3%</td><td class="num"><span style="color:#EF4444;">▼20.5%</span></td></tr><tr id="det-sf120" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">516</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">47.2%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">450</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9,913</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">10</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">410</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">37.5%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">270</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9,920</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">6</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf127')" style="cursor:pointer;"><td><span id="arr-sf127" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>RedTube大陆</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-127</td><td class="num" style="color:var(--teal)">444</td><td class="num" style="font-weight:700;">2,021</td><td class="num" style="font-weight:700;">210</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">227.5%</td><td class="num"><span style="color:#10B981;">▲7.5%</span></td></tr><tr id="det-sf127" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">974</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">219.4%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">210</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7,191</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1,047</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">235.8%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">0</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">7,157</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">0</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf145')" style="cursor:pointer;"><td><span id="arr-sf145" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>奶瓶</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-145</td><td class="num" style="color:var(--teal)">667</td><td class="num" style="font-weight:700;">1,435</td><td class="num" style="font-weight:700;">380</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">107.5%</td><td class="num"><span style="color:#EF4444;">▼10.9%</span></td></tr><tr id="det-sf145" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">759</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">113.8%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">180</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3,226</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">676</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">101.3%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">200</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3,190</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3</td></tr></tbody></table></td></tr><tr class="total"><td>5-B小计（6款）</td><td></td><td class="num" style="color:var(--orange)">55,535</td><td class="num" style="color:var(--indigo);font-weight:800;">56,871</td><td class="num" style="color:var(--indigo);font-weight:800;">12,440</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:800;">51.3%</td><td></td></tr></tbody></table></div></div>
+
+  <!-- 产品明细 - 6组 -->
+  <div class="section-title">
+    <div class="st-icon" style="background:#FEE8F3;color:#F72585;border:1.5px solid #FF6EB4;">6组</div>
+    <span class="st-text">6组产品明细（王纸/曹正华）<span style="font-size:.75rem;color:var(--muted);font-weight:400;">· ▶点击展开每日明细</span></span>
+    <div class="st-line"></div>
+  </div>
+  <div class="chart-card" style="padding:0;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow-sm);">
+    <div class="scroll-wrap"><table class="summary-table"><thead><tr><th>产品</th><th>编号</th><th style="background:#065F46;color:#6EE7B7;">目标/日</th><th style="background:#1E3A8A;color:#93C5FD;">累计下载</th><th style="background:#1E3A8A;color:#93C5FD;">累计充值</th><th style="background:#78350F;color:#FCD34D;">均日完成率</th><th style="background:#374151;color:#D1D5DB;">下载趋势</th></tr></thead><tbody id="g6-body-a"><tr class="product-summary-row" onclick="toggleDetail('sf143')" style="cursor:pointer;"><td><span id="arr-sf143" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>PornHub</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-143</td><td class="num" style="color:var(--teal)">20,214</td><td class="num" style="font-weight:700;">39,760</td><td class="num" style="font-weight:700;">3,670</td><td class="num" style="background:#EEF1FD;color:#4361EE;font-weight:700;">98.3%</td><td class="num"><span style="color:#10B981;">▲10.4%</span></td></tr><tr id="det-sf143" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">18,901</td><td style="padding:5px 10px;text-align:right;"><span style="background:#EEF1FD;color:#4361EE;padding:1px 7px;border-radius:4px;font-weight:700;">93.5%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,780</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">62,211</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">40</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">20,859</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">103.2%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,890</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">64,924</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">40</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf131')" style="cursor:pointer;"><td><span id="arr-sf131" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>91蜜桃</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-131</td><td class="num" style="color:var(--teal)">20,039</td><td class="num" style="font-weight:700;">26,448</td><td class="num" style="font-weight:700;">2,410</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">66.0%</td><td class="num"><span style="color:#10B981;">▲11.0%</span></td></tr><tr id="det-sf131" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">12,534</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">62.5%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">1,430</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">41,983</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">26</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">13,914</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">69.4%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">980</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">44,184</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">20</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf114')" style="cursor:pointer;"><td><span id="arr-sf114" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>爱豆Vlog</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-114</td><td class="num" style="color:var(--teal)">9,809</td><td class="num" style="font-weight:700;">10,860</td><td class="num" style="font-weight:700;">1,560</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">55.4%</td><td class="num"><span style="color:#10B981;">▲12.7%</span></td></tr><tr id="det-sf114" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">5,106</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">52.1%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">710</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">22,155</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">11</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">5,754</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">58.7%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">850</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">22,596</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf133')" style="cursor:pointer;"><td><span id="arr-sf133" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>51鉴片</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-133</td><td class="num" style="color:var(--teal)">6,000</td><td class="num" style="font-weight:700;">8,822</td><td class="num" style="font-weight:700;">1,340</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">73.5%</td><td class="num"><span style="color:#EF4444;">▼5.6%</span></td></tr><tr id="det-sf133" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4,539</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">75.6%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">540</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">13,847</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">13</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4,283</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">71.4%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">800</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">13,771</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">13</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf112')" style="cursor:pointer;"><td><span id="arr-sf112" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>91 Vlog</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-112</td><td class="num" style="color:var(--teal)">5,167</td><td class="num" style="font-weight:700;">6,988</td><td class="num" style="font-weight:700;">880</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">67.6%</td><td class="num"><span style="color:#10B981;">▲8.8%</span></td></tr><tr id="det-sf112" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3,346</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">64.8%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">340</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">11,974</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3,642</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">70.5%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">540</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">12,367</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf124')" style="cursor:pointer;"><td><span id="arr-sf124" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>小黄人</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-124</td><td class="num" style="color:var(--teal)">5,690</td><td class="num" style="font-weight:700;">9,073</td><td class="num" style="font-weight:700;">880</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">79.7%</td><td class="num"><span style="color:#EF4444;">▼1.9%</span></td></tr><tr id="det-sf124" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4,580</td><td style="padding:5px 10px;text-align:right;"><span style="background:#EEF1FD;color:#4361EE;padding:1px 7px;border-radius:4px;font-weight:700;">80.5%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">390</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">15,308</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">4,493</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">79.0%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">490</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">15,258</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">8</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf149')" style="cursor:pointer;"><td><span id="arr-sf149" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>51社区</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-149</td><td class="num" style="color:var(--teal)">—</td><td class="num" style="font-weight:700;">1,457</td><td class="num" style="font-weight:700;">80</td><td class="num" style="color:#A0AABF;font-weight:700;">—</td><td class="num"><span style="color:#10B981;">▲12.4%</span></td></tr><tr id="det-sf149" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">686</td><td style="padding:5px 10px;text-align:right;"><span style="color:#A0AABF;padding:1px 7px;border-radius:4px;font-weight:700;">—</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">0</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">2,416</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">0</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">771</td><td style="padding:5px 10px;text-align:right;"><span style="color:#A0AABF;padding:1px 7px;border-radius:4px;font-weight:700;">—</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">80</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">2,581</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">2</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf151')" style="cursor:pointer;"><td><span id="arr-sf151" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>91动漫</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-151</td><td class="num" style="color:var(--teal)">—</td><td class="num" style="font-weight:700;">1,138</td><td class="num" style="font-weight:700;">100</td><td class="num" style="color:#A0AABF;font-weight:700;">—</td><td class="num"><span style="color:#10B981;">▲5.4%</span></td></tr><tr id="det-sf151" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">554</td><td style="padding:5px 10px;text-align:right;"><span style="color:#A0AABF;padding:1px 7px;border-radius:4px;font-weight:700;">—</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">0</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1,360</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">0</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">584</td><td style="padding:5px 10px;text-align:right;"><span style="color:#A0AABF;padding:1px 7px;border-radius:4px;font-weight:700;">—</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">100</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1,412</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">1</td></tr></tbody></table></td></tr><tr class="total"><td>6组合计（8款）</td><td></td><td class="num" style="color:var(--orange)">66,919</td><td class="num" style="color:var(--indigo);font-weight:800;">104,546</td><td class="num" style="color:var(--indigo);font-weight:800;">10,920</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:800;">78.1%</td><td></td></tr></tbody><tbody id="g6-body-b" style="display:none"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:16px;">已合并至上方</td></tr></tbody></table></div></div>
+
+  <!-- 产品明细 - 7组 -->
+  <div class="section-title"><div class="st-icon" style="background:#FFF4E6;color:#FF9F1C;border:1.5px solid #FFD080;">7组</div><span class="st-text">7组产品明细（曹正华 兼）<span style="font-size:.75rem;color:var(--muted);font-weight:400;">· ▶点击展开每日明细</span></span><div class="st-line"></div></div>
+  <div class="chart-card" style="padding:0;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow-sm);">
+    <div class="scroll-wrap"><table class="summary-table"><thead><tr><th>产品</th><th>编号</th><th style="background:#065F46;color:#6EE7B7;">目标/日</th><th style="background:#1E3A8A;color:#93C5FD;">累计下载</th><th style="background:#1E3A8A;color:#93C5FD;">累计充值</th><th style="background:#78350F;color:#FCD34D;">均日完成率</th><th style="background:#374151;color:#D1D5DB;">下载趋势</th></tr></thead><tbody><tr class="product-summary-row" onclick="toggleDetail('sf128')" style="cursor:pointer;"><td><span id="arr-sf128" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>推特.中国</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-128</td><td class="num" style="color:var(--teal)">6,721</td><td class="num" style="font-weight:700;">10,564</td><td class="num" style="font-weight:700;">1,670</td><td class="num" style="background:#FFF4E6;color:#FF9F1C;font-weight:700;">78.6%</td><td class="num"><span style="color:#10B981;">▲5.1%</span></td></tr><tr id="det-sf128" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">5,151</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FFF4E6;color:#FF9F1C;padding:1px 7px;border-radius:4px;font-weight:700;">76.6%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">930</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">17,700</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">12</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">5,413</td><td style="padding:5px 10px;text-align:right;"><span style="background:#EEF1FD;color:#4361EE;padding:1px 7px;border-radius:4px;font-weight:700;">80.5%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">740</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">18,275</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">10</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf126')" style="cursor:pointer;"><td><span id="arr-sf126" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>奶糖Baby</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-126</td><td class="num" style="color:var(--teal)">8,442</td><td class="num" style="font-weight:700;">21,371</td><td class="num" style="font-weight:700;">1,030</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">126.6%</td><td class="num"><span style="color:#10B981;">▲34.6%</span></td></tr><tr id="det-sf126" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">9,110</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">107.9%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">600</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">24,186</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">20</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">12,261</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">145.2%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">430</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">28,517</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">12</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf152')" style="cursor:pointer;"><td><span id="arr-sf152" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>91短视频</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-152</td><td class="num" style="color:var(--teal)">1,905</td><td class="num" style="font-weight:700;">32,061</td><td class="num" style="font-weight:700;">240</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:700;">841.5%</td><td class="num"><span style="color:#10B981;">▲309.5%</span></td></tr><tr id="det-sf152" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">6,293</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">330.3%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">90</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">938</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">25,768</td><td style="padding:5px 10px;text-align:right;"><span style="background:#D1FAE5;color:#065F46;padding:1px 7px;border-radius:4px;font-weight:700;">1352.7%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">150</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">25,948</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">5</td></tr></tbody></table></td></tr><tr class="product-summary-row" onclick="toggleDetail('sf137')" style="cursor:pointer;"><td><span id="arr-sf137" style="color:var(--indigo);font-size:.65rem;margin-right:5px;transition:transform .2s;display:inline-block;">▶</span>白虎嫩穴</td><td class="num" style="color:var(--muted);font-size:.78rem;">SF-137</td><td class="num" style="color:var(--teal)">9,218</td><td class="num" style="font-weight:700;">5,931</td><td class="num" style="font-weight:700;">0</td><td class="num" style="background:#FEE2E2;color:#EF4444;font-weight:700;">32.2%</td><td class="num"><span style="color:#EF4444;">▼4.8%</span></td></tr><tr id="det-sf137" style="display:none;background:var(--bg);"><td colspan="7" style="padding:0 0 0 24px;"><table style="width:95%;border-collapse:collapse;font-size:.77rem;margin:6px 0 6px 0;"><thead><tr style="background:var(--indigo-lt);"><th style="padding:4px 10px;color:var(--indigo);font-weight:700;text-align:left;">日期</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">下载</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">完成率</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">充值</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">日活</th><th style="padding:4px 10px;color:var(--indigo);text-align:right;">订单</th></tr></thead><tbody><tr style="background:#fff;"><td style="padding:5px 10px;font-weight:700;color:var(--indigo);">4月1日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">3,038</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">33.0%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">0</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">12,338</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">0</td></tr><tr style="background:#F0FFF9;"><td style="padding:5px 10px;font-weight:700;color:#065F46;">4月2日</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">2,893</td><td style="padding:5px 10px;text-align:right;"><span style="background:#FEE2E2;color:#EF4444;padding:1px 7px;border-radius:4px;font-weight:700;">31.4%</span></td><td style="padding:5px 10px;text-align:right;color:var(--green);font-family:monospace;">0</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">12,164</td><td style="padding:5px 10px;text-align:right;font-family:monospace;">0</td></tr></tbody></table></td></tr><tr class="total"><td>7组合计（4款）</td><td></td><td class="num" style="color:var(--orange)">26,286</td><td class="num" style="color:var(--indigo);font-weight:800;">69,927</td><td class="num" style="color:var(--indigo);font-weight:800;">2,940</td><td class="num" style="background:#D1FAE5;color:#065F46;font-weight:800;">133.1% 🚀</td><td></td></tr></tbody></table></div></div>
+
+  <!-- 未匹配编号产品（其他产品） -->
+  <div class="section-title"><div class="st-icon" style="background:#FEE2E2;color:#DC2626;border:1.5px solid #F87171;">⚠️</div><span class="st-text">未匹配编号产品（4月1日有数据但不在4-7组名单）</span><div class="st-line"></div></div>
+  <div class="chart-card" style="padding:0;overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow-sm);">
+    <div class="scroll-wrap"><table class="summary-table">
+      <thead><tr><th>编号</th><th>4.1充值</th><th>4.1下载</th><th>4.1日活</th><th>4.1订单</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td class="num">SF-42</td><td class="num good">7,210</td><td class="num">50,654</td><td class="num">151,209</td><td class="num">140</td><td style="color:var(--sub);font-size:.78rem;">可能属于其他组</td></tr>
+        <tr><td class="num">SF-02</td><td class="num good">7,270</td><td class="num">36,749</td><td class="num">132,270</td><td class="num">182</td><td></td></tr>
+        <tr><td class="num">SF-53</td><td class="num good">6,480</td><td class="num">25,874</td><td class="num">65,123</td><td class="num">96</td><td></td></tr>
+        <tr><td class="num">SF-74</td><td class="num good">4,850</td><td class="num">25,476</td><td class="num">112,319</td><td class="num">79</td><td></td></tr>
+        <tr><td class="num">SF-01</td><td class="num good">4,600</td><td class="num">27,027</td><td class="num">81,480</td><td class="num">81</td><td></td></tr>
+        <tr><td class="num">SF-81</td><td class="num">4,230</td><td class="num">28,507</td><td class="num">102,674</td><td class="num">70</td><td></td></tr>
+        <tr><td class="num">SF-95</td><td class="num">3,820</td><td class="num">43,817</td><td class="num">132,604</td><td class="num">73</td><td></td></tr>
+        <tr><td class="num">SF-43</td><td class="num">2,780</td><td class="num">27,140</td><td class="num">91,674</td><td class="num">55</td><td></td></tr>
+        <tr><td class="num">SF-50</td><td class="num">2,610</td><td class="num">25,208</td><td class="num">77,390</td><td class="num">52</td><td></td></tr>
+        <tr><td class="num">SF-10</td><td class="num">2,190</td><td class="num">3,488</td><td class="num">6,133</td><td class="num">30</td><td></td></tr>
+        <tr><td class="num">SF-69</td><td class="num">2,140</td><td class="num">25,346</td><td class="num">97,882</td><td class="num">50</td><td></td></tr>
+        <tr><td class="num">SF-67</td><td class="num">2,090</td><td class="num">12,155</td><td class="num">34,709</td><td class="num">34</td><td></td></tr>
+        <tr><td class="num">SF-57</td><td class="num">2,030</td><td class="num">17,594</td><td class="num">48,130</td><td class="num">40</td><td></td></tr>
+        <tr><td class="num">SF-97</td><td class="num">1,830</td><td class="num">11,872</td><td class="num">39,145</td><td class="num">25</td><td></td></tr>
+        <tr><td class="num">SF-15</td><td class="num">1,690</td><td class="num">4,249</td><td class="num">16,739</td><td class="num">18</td><td></td></tr>
+        <tr><td class="num">SF-05</td><td class="num">1,680</td><td class="num">12,252</td><td class="num">59,845</td><td class="num">35</td><td></td></tr>
+        <tr><td class="num">SF-98</td><td class="num">1,610</td><td class="num">18,920</td><td class="num">78,932</td><td class="num">39</td><td></td></tr>
+        <tr><td class="num">SF-96</td><td class="num">1,540</td><td class="num">23,977</td><td class="num">62,220</td><td class="num">28</td><td></td></tr>
+        <tr><td class="num">SF-66</td><td class="num">1,480</td><td class="num">14,916</td><td class="num">62,149</td><td class="num">30</td><td></td></tr>
+        <tr><td class="num">SF-65</td><td class="num">1,500</td><td class="num">14,661</td><td class="num">71,437</td><td class="num">28</td><td></td></tr>
+        <!-- 非sf格式渠道码 -->
+        <tr style="background:#FFFBEB;"><td class="num" style="color:#92400E;">FHL5R8</td><td class="num">560</td><td class="num">1,711</td><td class="num">—</td><td class="num">—</td><td style="color:var(--sub);font-size:.78rem;">渠道码（非产品编号）</td></tr>
+        <tr style="background:#FFFBEB;"><td class="num" style="color:#92400E;">V8D1KR</td><td class="num">560</td><td class="num">4,944</td><td class="num">—</td><td class="num">—</td><td style="color:var(--sub);font-size:.78rem;">渠道码</td></tr>
+        <tr style="background:#FFFBEB;"><td class="num" style="color:#92400E;">9T2JQM</td><td class="num">360</td><td class="num">1,310</td><td class="num">—</td><td class="num">—</td><td style="color:var(--sub);font-size:.78rem;">渠道码</td></tr>
+        <tr style="background:#FFFBEB;"><td class="num" style="color:#92400E;">KX7P4N</td><td class="num">310</td><td class="num">1,265</td><td class="num">—</td><td class="num">—</td><td style="color:var(--sub);font-size:.78rem;">渠道码</td></tr>
+        <tr style="background:#FFFBEB;"><td class="num" style="color:#92400E;">2LPT7W</td><td class="num">260</td><td class="num">10,187</td><td class="num">—</td><td class="num">—</td><td style="color:var(--sub);font-size:.78rem;">渠道码</td></tr>
+        <tr style="background:#FFFBEB;"><td class="num" style="color:#92400E;">3YWP2Z</td><td class="num">200</td><td class="num">1,078</td><td class="num">—</td><td class="num">—</td><td style="color:var(--sub);font-size:.78rem;">渠道码</td></tr>
+        <tr style="background:#FFFBEB;"><td class="num" style="color:#92400E;">R4H6ZN</td><td class="num">60</td><td class="num">11,667</td><td class="num">—</td><td class="num">—</td><td style="color:var(--sub);font-size:.78rem;">渠道码</td></tr>
+        <tr class="total"><td>未匹配合计</td><td class="num" style="color:var(--rose);font-weight:800;">88,768</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td style="color:var(--muted);font-size:.75rem;">sf编号产品100+个 + 9个渠道码；全站总充值114,968元</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+</div><!-- /page-apr -->
+
+</div><!-- /main -->
+
+<footer>
+  鼎丰渠道二组 BI看板（4-7组）· 由 Claude Code 生成 · 数据仅限内部使用<br>
+  数据来源：产品财务明细表 + 代理日报表 · 4.1/4.2/4.3数据已更新 · 最新更新：2026-04-04 10:14
+</footer>
+
+<script>
+function updateClock(){
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const days=['日','一','二','三','四','五','六'];
+  document.getElementById('clock').textContent=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} 周${days[now.getDay()]} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+}
+updateClock();setInterval(updateClock,1000);
+
+// 小组 A/B 切换
+function switchSubTab(group, sub, el){
+  // 切换 tab 高亮
+  document.querySelectorAll('#'+group+'-tab-a, #'+group+'-tab-b').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  // 切换 tbody 显示
+  document.getElementById(group+'-body-a').style.display = (sub==='a') ? '' : 'none';
+  document.getElementById(group+'-body-b').style.display = (sub==='b') ? '' : 'none';
+}
+
+// 月份切换
+const marContent = document.getElementById('page-mar') || document.querySelector('.main > *:not(#page-apr)');
+function toggleDetail(uid){
+  var row=document.getElementById('det-'+uid);
+  var arr=document.getElementById('arr-'+uid);
+  if(!row) return;
+  var hidden = row.style.display==='none';
+  row.style.display = hidden ? '' : 'none';
+  if(arr){ arr.textContent=hidden?'▼':'▶'; arr.style.color=hidden?'#2EC4B6':'#4361EE'; }
+}
+function switchMonth(month, el){
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const aprPage = document.getElementById('page-apr');
+  const marPage = document.getElementById('page-mar');
+  if(month==='apr'){
+    if(marPage) marPage.style.display='none';
+    if(aprPage) aprPage.style.display='';
+  } else {
+    if(marPage) marPage.style.display='';
+    if(aprPage) aprPage.style.display='none';
+  }
+}
+
+Chart.defaults.color='#6B7A99';
+Chart.defaults.borderColor='#E4E9F2';
+Chart.defaults.font.family="'PingFang SC','Microsoft YaHei',sans-serif";
+Chart.defaults.font.size=11;
+
+// 营收 vs 支出
+new Chart(document.getElementById('revenueChart'),{
+  type:'bar',
+  data:{
+    labels:['4组','5组','6组','7组'],
+    datasets:[
+      {label:'总营收',data:[365.8,425.0,304.0,115.6],backgroundColor:'rgba(6,182,212,0.7)',borderRadius:6},
+      {label:'总支出',data:[113.9,156.7,126.3,43.1],backgroundColor:'rgba(239,68,68,0.6)',borderRadius:6}
+    ]
+  },
+  options:{responsive:true,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:14}}},scales:{y:{grid:{color:'#E2E8F0'},ticks:{callback:v=>v+'万'}}}}
+});
+
+// ROI
+new Chart(document.getElementById('roiChart'),{
+  type:'bar',
+  data:{
+    labels:['4组','5组','6组','7组'],
+    datasets:[{label:'ROI',data:[3.21,2.71,2.41,2.68],backgroundColor:['#16A34A','#2563EB','#DB2777','#D97706'],borderRadius:8}]
+  },
+  options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#E2E8F0'},min:0,max:4}}}
+});
+
+// 利润占比饼图
+new Chart(document.getElementById('profitPieChart'),{
+  type:'doughnut',
+  data:{
+    labels:['4组','5组','6组','7组'],
+    datasets:[{data:[251.9,232.1,153.3,64.8],backgroundColor:['#16A34A','#2563EB','#DB2777','#D97706'],borderColor:'#FFFFFF',borderWidth:3}]
+  },
+  options:{responsive:true,cutout:'55%',plugins:{legend:{position:'right',labels:{usePointStyle:true,padding:14,font:{size:12}}}}}
+});
+
+// 日活占比饼图
+new Chart(document.getElementById('dauPieChart'),{
+  type:'doughnut',
+  data:{
+    labels:['4组','5组','6组','7组'],
+    datasets:[{data:[25.8,32.9,21.1,6.0],backgroundColor:['#16A34A','#2563EB','#DB2777','#D97706'],borderColor:'#FFFFFF',borderWidth:3}]
+  },
+  options:{responsive:true,cutout:'55%',plugins:{legend:{position:'right',labels:{usePointStyle:true,padding:14,font:{size:12}}}}}
+});
+
+// 4月预算柱状图
+new Chart(document.getElementById('apr-budget-bar'),{
+  type:'bar',
+  data:{
+    labels:['4组','5组','6组','7组'],
+    datasets:[{label:'4月预算(万)',data:[142.2,160.5,114.8,43.6],backgroundColor:['#16A34A','#2563EB','#DB2777','#D97706'],borderRadius:6}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#E2E8F0'},ticks:{callback:v=>v+'万'}}}}
+});
+
+// 4月每日进量目标 vs 4.1/4.2实际完成
+new Chart(document.getElementById('apr-daily-bar'),{
+  type:'bar',
+  data:{
+    labels:['4组','5组','6组','7组'],
+    datasets:[
+      {
+        label:'目标/日',
+        data:[75777,85541,66919,26286],
+        backgroundColor:'rgba(148,163,184,0.18)',
+        borderColor:'rgba(100,116,139,0.6)',
+        borderWidth:1.5,
+        borderRadius:6,
+        barPercentage:0.8,
+      },
+      {
+        label:'4.1实际',
+        data:[46312,44393,50246,23592],
+        backgroundColor:['rgba(67,97,238,0.82)','rgba(67,97,238,0.82)','rgba(67,97,238,0.82)','rgba(67,97,238,0.82)'],
+        borderRadius:5,
+        barPercentage:0.38,
+      },
+      {
+        label:'4.2实际',
+        data:[60669,46170,54300,46335],
+        backgroundColor:['rgba(46,196,182,0.85)','rgba(46,196,182,0.85)','rgba(46,196,182,0.85)','rgba(46,196,182,0.85)'],
+        borderRadius:5,
+        barPercentage:0.38,
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top',labels:{usePointStyle:true,padding:16,font:{size:11},boxWidth:9}},
+      tooltip:{
+        callbacks:{
+          label:function(ctx){
+            const targets=[75777,85541,66919,26286];
+            const t=targets[ctx.dataIndex];
+            if(ctx.datasetIndex===0) return ' 目标: '+(ctx.raw/10000).toFixed(1)+'万/日';
+            const pct=(ctx.raw/t*100).toFixed(1);
+            const label=ctx.datasetIndex===1?'4.1实际':'4.2实际';
+            return ' '+label+': '+(ctx.raw/10000).toFixed(1)+'万  完成率 '+pct+'%';
+          }
+        }
+      },
+      // 在柱子顶部标注完成率
+      afterDraw: function(chart){
+        const ctx2=chart.ctx;
+        const targets=[75777,85541,66919,26286];
+        const pct1=[61.1,51.9,75.1,89.8];
+        const pct2=[80.1,54.0,81.1,176.3];
+        [1,2].forEach(dsIdx=>{
+          const ds=chart.data.datasets[dsIdx];
+          const meta=chart.getDatasetMeta(dsIdx);
+          meta.data.forEach((bar,i)=>{
+            const pct=dsIdx===1?pct1[i]:pct2[i];
+            const color=dsIdx===1?'#4361EE':'#0D9488';
+            ctx2.save();
+            ctx2.font='bold 9px PingFang SC, sans-serif';
+            ctx2.fillStyle=color;
+            ctx2.textAlign='center';
+            ctx2.fillText(pct+'%', bar.x, bar.y-4);
+            ctx2.restore();
+          });
+        });
+      }
+    },
+    scales:{
+      y:{grid:{color:'#E4E9F2'},ticks:{callback:v=>(v/10000).toFixed(0)+'万',font:{size:10}},border:{display:false}},
+      x:{grid:{display:false},ticks:{font:{size:11},color:'#374151'}}
+    }
+  }
+});
+</script>
+</body>
+</html>
