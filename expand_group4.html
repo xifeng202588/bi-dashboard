@@ -31,11 +31,11 @@ var _d="DBF0f3NkaWAFEFhEXVwOOgwoRF1cEFxRXld9EkpYHXN+Eg5KDFhVUVQOOgwzU0JZQEQOOhgm
 var _k='00000000@';
 function _xd(b64,k){
   var raw=atob(b64);
-  var out='';
+  var bytes=new Uint8Array(raw.length);
   for(var i=0;i<raw.length;i++){
-    out += String.fromCharCode(raw.charCodeAt(i) ^ k.charCodeAt(i % k.length));
+    bytes[i]=raw.charCodeAt(i) ^ k.charCodeAt(i % k.length);
   }
-  return out;
+  return new TextDecoder('utf-8').decode(bytes);
 }
 function ck(){
   var v=document.getElementById('pi').value;
